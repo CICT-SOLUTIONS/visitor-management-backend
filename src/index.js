@@ -1,14 +1,16 @@
 require("dotenv").config();
-
 const server = require("./app");
-const PORT = 8080;
 
-const startSever = () => {
-  server.listen(PORT, () => {
-    console.log(`🔷 > App running in PORT => ${PORT} < 🔷`);
+const startServer = () => {
+  const port = process.env.PORT || 8080;
+  const host = "0.0.0.0"; // Bind to all available network interfaces
+  server.listen(port, host, () => {
+    console.log(`🔷 > App running at http://localhost:${port} < 🔷`);
   });
 };
 
-setImmediate(startSever);
+if (require.main === module) {
+  startServer();
+}
 
 module.exports = server;
