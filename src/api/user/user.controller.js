@@ -5,6 +5,8 @@ const User = require('./user.model');
 module.exports = {
   //CREATE USER
   async signUp(req, res) {
+
+    
     try {
       const { firstName, lastName, email, mobile } = req.body;
       const otheruser = await User.findOne({ email });
