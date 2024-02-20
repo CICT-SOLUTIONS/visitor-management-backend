@@ -15,14 +15,12 @@ module.exports = {
       }
 
       const encPassword = await bcrypt.hash(password, 8);
-      const createdAt = new Date(Date.now()).toString();
-      
+      // const createdAt = new Date(Date.now()).toString();
+
       const admin = await Admin.create({
         fullName,
         email,
-        encPassword,
-        mobile,
-        createdAt,
+        password: encPassword,
       });
 
       res.status(201).json({
@@ -36,29 +34,27 @@ module.exports = {
     }
   },
 
-
   //LOG USER
   async signIn(req, res) {
     try {
-      const { userName, password } = req.body;
-
-      const admin = await Admin.findOne({ userName });
+      const { email, password } = req.body;
+      const admin = await Admin.findOne({ email });
 
       if (!admin) {
-        throw new Error('UserName or password invalid');
+        throw new Error('email or password invalid');
       }
 
       const isValid = await bcrypt.compare(password, admin.password);
 
       if (!isValid) {
-        throw new Error('UserName or password invalid');
+        throw new Error('email or password invalid');
       }
 
       const token = jwt.sign({ id: admin._id }, process.env.ACCESS_KEY, {
         expiresIn: 3600,
       });
 
-      res.status(200).json({ message: `Welcome back ${admin.userName}!`, token });
+      res.status(200).json({ message: `Welcome back ${admin.email}!`, token });
     } catch (error) {
       res.status(500).json({
         error,
@@ -78,42 +74,42 @@ module.exports = {
   },
 
   // UPDATE USER
-  async updateUserInfo(req, res) {
-    try {
-      const { userId } = req.params;
-      const updatedData = req.body;
+  // async updateUserInfo(req, res) {
+  //   try {
+  //     const { userId } = req.params;
+  //     const updatedData = req.body;
 
-      const updatedUser = await Admin.findByIdAndUpdate(userId, updatedData, {
-        new: true,
-      });
+  //     const updatedUser = await Admin.findByIdAndUpdate(userId, updatedData, {
+  //       new: true,
+  //     });
 
-      if (!updatedUser) {
-        return res.status(404).json({ message: `There is no user with this Id inside the DB` });
-      }
+  //     if (!updatedUser) {
+  //       return res.status(404).json({ message: `There is no user with this Id inside the DB` });
+  //     }
 
-      res.status(200).json({ message: 'User updated', updatedUser });
-    } catch (error) {
-      res.status(500).json({
-        message: "Sorry! We couldn't update the user",
-      });
-    }
-  },
+  //     res.status(200).json({ message: 'User updated', updatedUser });
+  //   } catch (error) {
+  //     res.status(500).json({
+  //       message: "Sorry! We couldn't update the user",
+  //     });
+  //   }
+  // },
 
   //DELETE USER
-  async deleteUser(req, res) {
-    try {
-      const { userId } = req.params;
+  // async deleteUser(req, res) {
+  //   try {
+  //     const { userId } = req.params;
 
-      const result = await Admin.findByIdAndDelete(userId);
-      const isDeleted = result ? true : false;
+  //     const result = await Admin.findByIdAndDelete(userId);
+  //     const isDeleted = result ? true : false;
 
-      if (result !== null) {
-        res.status(200).json({ message: `User deleted successfully` });
-      } else {
-        throw new Error('User not found!');
-      }
-    } catch (error) {
-      res.status(500).json({ message: `User deletion failed! ${error}` });
-    }
-  },
+  //     if (result !== null) {
+  //       res.status(200).json({ message: `User deleted successfully` });
+  //     } else {
+  //       throw new Error('User not found!');
+  //     }
+  //   } catch (error) {
+  //     res.status(500).json({ message: `User deletion failed! ${error}` });
+  //   }
+  // },
 };

@@ -1,37 +1,44 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const user = require('./user.model');
+const User = require('./user.model');
 
 module.exports = {
   //CREATE USER
   async signUp(req, res) {
     try {
       const { firstName, lastName, email, mobile } = req.body;
-
-      // if (secretKey !== process.env.ACCESS_KEY) {
-      //   throw new Error("INVALID ACCESS!");
-      // }
-
-      const otheruser = await user.findOne({ email });
+      const otheruser = await User.findOne({ email });
 
       if (otheruser) {
-        throw new Error('This email is already registered');
+        otheruser.signInHistory.push(`${Date.now()}`);
+
+        const updatedUser = await User.findByIdAndUpdate(
+          otheruser._id,
+          { signInHistory: otheruser.signInHistory },
+          {
+            new: true,
+          }
+        );
+
+        res.status(201).json({
+          message: 'User already present in the Database. SignIn History Updated',
+          otheruser,
+        });
+      } else {
+        const user = await User.create({
+          firstName,
+          lastName,
+          email,
+          mobile,
+          signInHistory: [`${Date.now()}`],
+          createdAt: `${Date.now()}`,
+        });
+
+        res.status(201).json({
+          message: 'User Created Successfully',
+          user,
+        });
       }
-
-      // const encPassword = await bcrypt.hash(password, 8);
-
-      const user = await user.create({
-        firstName,
-        lastName,
-        email,
-        mobile,
-        createdAt: `${new Date(Date.now()).toString()}`,
-      });
-
-      res.status(201).json({
-        message: 'User Created Successfully',
-        user,
-      });
     } catch (error) {
       res.status(500).json({
         message: `We couldn't create this user, ${error}`,
@@ -71,7 +78,7 @@ module.exports = {
   //GET USER INFO
   async getUserData(req, res) {
     try {
-      const users = await user.find();
+      const users = await User.find();
 
       res.status(201).json({ message: 'Success!', users });
     } catch (error) {

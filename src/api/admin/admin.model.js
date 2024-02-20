@@ -7,7 +7,7 @@ const adminSchema = new Schema({
     maxlength: [30, "The first name provided is too long"],
   },
 
-  userName: {
+  email: {
     type: String,
     required: true,
   },

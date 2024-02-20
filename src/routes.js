@@ -1,11 +1,11 @@
 const admin = require("./api/admin");
-const posts = require("./api/post");
-const blogs = require("./api/blog");
+const user = require("./api/user");
+
 
 const routes = (app) => {
   app.use("/api/admin", admin);
-  app.use("/api/posts", posts);
-  app.use("/api/blogs", blogs);
+  app.use("/api/user", user);
+
 };
 
 module.exports = routes;

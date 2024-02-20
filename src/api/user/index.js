@@ -1,10 +1,10 @@
 const router = require("express").Router();
-const adminController = require("./admin.controller");
+const userController = require("./user.controller");
 const authMiddleware = require("../../middlewares/auth.middleware");
 
-router.route("/").get(adminController.getUserData);
-router.route("/signup").post(adminController.signUp);
-router.route("/signin").post(adminController.signIn);
+router.route("/").get(userController.getUserData);
+router.route("/signup").post(userController.signUp);
+router.route("/signin").post(userController.signIn);
 
 // router
   // .route("/:userId")
